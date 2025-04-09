@@ -1,13 +1,40 @@
 package svsl;
 
-import java.util.Objects;
+public record Id(String type, String name) {
 
-public record Identifier(String type, String name) {
-    public static Identifier of(String path) {
+    public static Id of(String path) {
         String[] parts = path.split(":", 2);
-        String type = parts.length > 1 ? parts[0] : "common";
+        String type = parts.length > 1 ? parts[0] : "c";
         String name = parts.length > 1 ? parts[1] : parts[0];
-        return new Identifier(type, name);
+        return new Id(type, name);
+    }
+
+    public static Id ofItem(String path) {
+        return new Id("item", path);
+    }
+
+    public static Id ofPlayer(String path) {
+        return new Id("player", path);
+    }
+
+    public static Id ofAction(String path) {
+        return new Id("action", path);
+    }
+
+    public static Id ofTag(String path) {
+        return new Id("tag", path);
+    }
+
+    public static Id ofContainer(String path) {
+        return new Id("container", path);
+    }
+
+    public static Id ofRecipe(String id) {
+        return new Id("recipe", id);
+    }
+
+    public Id withSuffix(String suffix) {
+        return new Id(type, name + suffix);
     }
 
     @Override
@@ -17,7 +44,7 @@ public record Identifier(String type, String name) {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Identifier id2) {
+        if (obj instanceof Id id2) {
             return id2.type.equals(type) && id2.name.equals(name);
         }
         return false;

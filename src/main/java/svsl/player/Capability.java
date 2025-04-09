@@ -1,4 +1,4 @@
-package svsl.env;
+package svsl.player;
 
 import svsl.Id;
 
@@ -20,11 +20,11 @@ public class Capability {
         exp += delta;
         if (exp > upgradeExp) {
             exp = 0;
-            upgradeExp = levelToUpGradeExp(++level);
+            upgradeExp = levelToUpgradeExp(++level);
         }
     }
 
-    private static int levelToUpGradeExp(int level) {
+    private static int levelToUpgradeExp(int level) {
         return switch (level) {
             case 1 -> 100;
             case 2 -> 380;
