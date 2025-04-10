@@ -11,4 +11,7 @@ public class Recipes {
 
     public static final Recipe<FarmingRecipe> FARMING = new Recipe<FarmingRecipe>("farming")
             .register(new FarmingRecipe(Elements.STRAWBERRY, 8, 4));
+
+    public static void build() {
+    }
 }

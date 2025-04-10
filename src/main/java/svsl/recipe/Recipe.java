@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Recipe<R extends RecipeItem> {
-    private final Map<Id, R> recipes = new HashMap<>();
+    private final Map<String, R> recipes = new HashMap<>();
     public final Id id;
 
     public Recipe(String id) {
@@ -21,11 +21,11 @@ public class Recipe<R extends RecipeItem> {
         return this;
     }
 
-    public boolean hasRecipe(Id id) {
+    public boolean hasRecipe(String id) {
         return recipes.containsKey(id);
     }
 
-    public R getRecipeItem(Id id) {
+    public R getRecipeItem(String id) {
         return recipes.get(id);
     }
 }

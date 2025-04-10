@@ -2,22 +2,26 @@ package svsl.machine.farmland;
 
 import svsl.*;
 import svsl.machine.Machine;
+import svsl.machine.MachineSet;
+import svsl.machine.MachineState;
+import svsl.machine.MachineType;
 import svsl.registry.Elements;
 import svsl.registry.Recipes;
 import svsl.world.StardewValley;
 import svsl.world.World;
 
-public class Farmland extends Machine {
+public class Farmland extends Machine<Farmland> {
     private boolean grown;
     private FarmingRecipe recipe;
 
-    public Farmland(World world) {
-        super(world, "farmland", "耕地", 2);
+    public Farmland(int pos, MachineSet<Farmland> set, MachineType type) {
+        super(pos, set, type);
     }
 
     @Override
     public boolean accept(EStack input) {
-        return input.element.hasTag(Tag.SEED) && Recipes.FARMING.hasRecipe(Elements.seedToCrop(input.element).id);
+        recipe = Recipes.FARMING.getRecipeItem(Elements.seedToCrop(input.element).id.name());
+        return input.element.hasTag(Tag.SEED) && recipe != null;
     }
 
     @Override
@@ -31,27 +35,25 @@ public class Farmland extends Machine {
     @Override
     protected void onStarting(EStack input) {
         inv[0].setStack(input.copy());
-        recipe = Recipes.FARMING.getRecipeItem(Elements.seedToCrop(input.element).id);
     }
 
     @Override
     protected int getDuration(EStack input) {
-        FarmingRecipe r = Recipes.FARMING.getRecipeItem(input.element.id);
-        if (r.cycle() > 0 && grown) {
-            return r.cycle();
+        if (recipe.cycle() > 0 && grown) {
+            return recipe.cycle();
         }
-        return r.days();
+        return recipe.days();
     }
 
     @Override
     public void update() {
-        if (isWorking) {
+        if (state == MachineState.Working) {
             if (--daysLeft == 0) {
-                isWorking = false;
+                setState(MachineState.Finished);
                 StardewValley.INSTANCE.player.inv.store(collect());
                 if (grown && recipe.cycle() > 0) {
                     daysLeft = recipe.cycle();
-                    isWorking = true;
+                    setState(MachineState.Working);
                     inv[0].setStack(recipe.crop().stack(1));
                 }
             }

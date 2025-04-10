@@ -4,7 +4,7 @@ public record Id(String type, String name) {
 
     public static Id of(String path) {
         String[] parts = path.split(":", 2);
-        String type = parts.length > 1 ? parts[0] : "c";
+        String type = parts.length > 1 ? parts[0] : "null";
         String name = parts.length > 1 ? parts[1] : parts[0];
         return new Id(type, name);
     }
@@ -26,7 +26,11 @@ public record Id(String type, String name) {
     }
 
     public static Id ofContainer(String path) {
-        return new Id("container", path);
+        return new Id("c", path);
+    }
+
+    public static Id ofMachine(String path) {
+        return new Id("me", path);
     }
 
     public static Id ofRecipe(String id) {

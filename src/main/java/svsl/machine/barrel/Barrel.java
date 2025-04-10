@@ -2,13 +2,14 @@ package svsl.machine.barrel;
 
 import svsl.*;
 import svsl.machine.Machine;
+import svsl.machine.MachineSet;
+import svsl.machine.MachineType;
 import svsl.registry.Elements;
 import svsl.registry.Recipes;
-import svsl.world.World;
 
-public class Barrel extends Machine {
-    public Barrel(World world) {
-        super(world, "barrel", "小桶");
+public class Barrel extends Machine<Barrel> {
+    public Barrel(int pos, MachineSet<Barrel> set, MachineType type) {
+        super(pos, set, type);
     }
 
     @Override
@@ -28,6 +29,12 @@ public class Barrel extends Machine {
 
     @Override
     protected int getDuration(EStack input) {
-        return Recipes.BARREL.getRecipeItem(input.element.id).days();
+        for (Tag t : input.element.tags) {
+            var item = Recipes.BARREL.getRecipeItem(t.id.name());
+            if (item != null) {
+                return item.days();
+            }
+        }
+        throw new RuntimeException("No barrel found");
     }
 }

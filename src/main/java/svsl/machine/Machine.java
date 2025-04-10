@@ -2,25 +2,26 @@ package svsl.machine;
 
 import svsl.*;
 import svsl.world.StardewValley;
-import svsl.world.World;
 
 import java.util.Arrays;
 
-public abstract class Machine extends Container {
-    protected boolean isWorking;
+public abstract class Machine<M extends Machine<?>> extends Container {
+    public final MachineType type;
+    public final int pos;
+    protected final MachineSet<M> machineSet;
+    protected MachineState state = MachineState.Standby;
     protected int daysLeft;
     protected ESlot[] inv;
 
-    public Machine(World parent, String id, String name, int slots) {
-        super(parent, new Id("me", id), name);
-        inv = new ESlot[slots];
-        for (int i = 0; i < slots; i++) {
+    public Machine(int pos, MachineSet<M> set, MachineType type) {
+        super(set, type.id.withSuffix("_" + pos), type.name);
+        this.pos = pos;
+        this.machineSet = set;
+        this.type = type;
+        inv = new ESlot[type.slots];
+        for (int i = 0; i < type.slots; i++) {
             inv[i] = registerSlot(EStack.NULL);
         }
-    }
-
-    public Machine(World parent, String id, String name) {
-        this(parent, id, name, 1);
     }
 
     public abstract boolean accept(EStack input);
@@ -32,38 +33,45 @@ public abstract class Machine extends Container {
         if (!accept(input)) {
             throw new IllegalArgumentException("can't brew: " + input);
         }
-        if (!isWorking) {
+        if (state == MachineState.Standby) {
             onStarting(input);
             daysLeft = getDuration(input);
-            isWorking = true;
+            setState(MachineState.Working);
         }
     }
 
     public EStack collect() {
-        if (isWorking || inv[0].isNull()) {
+        if (state != MachineState.Finished || inv[0].isNull()) {
             return EStack.NULL;
         }
         onFinished();
         var out = inv[0].getStack();
         inv[0].setStack(EStack.NULL);
+        setState(MachineState.Standby);
         return out;
     }
 
     public void update() {
-        if (isWorking) {
+        if (state == MachineState.Working) {
             if (--daysLeft == 0) {
-                isWorking = false;
-                StardewValley.INSTANCE.player.inv.store(collect());
+                setState(MachineState.Finished);
             }
+        }
+    }
+
+    protected void setState(MachineState state) {
+        if (state != this.state) {
+            machineSet.onStateChanged((M)this, this.state, state);
+            this.state = state;
         }
     }
 
     @Override
     public String toString() {
-        String res = id.toString();
-        if (isWorking) {
-            res += Arrays.toString(inv) + "(" + daysLeft + "d)";
-        }
-        return res;
+        return switch (state) {
+            case Standby -> "就绪";
+            case Working -> "工作中:" + Arrays.toString(inv) + "(" + daysLeft + "d)";
+            case Finished -> "完成:" + Arrays.toString(inv);
+        };
     }
 }

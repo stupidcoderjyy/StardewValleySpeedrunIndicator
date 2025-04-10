@@ -3,22 +3,31 @@ package svsl.world;
 import svsl.Container;
 import svsl.Id;
 import svsl.player.Player;
+import svsl.registry.Elements;
+import svsl.registry.Recipes;
+
+import java.util.EnumMap;
+import java.util.Map;
 
 public class StardewValley extends Container {
     public static final StardewValley INSTANCE = new StardewValley();
     public final Player player;
-    public final World pelicanTown;
-    public final World oasis;
-    public final World gingerIsland;
+    private final Map<WorldType, World> worlds = new EnumMap<>(WorldType.class);
     public final Date date;
 
     private StardewValley() {
         super(Id.ofContainer("sv"), "星露谷");
+        for (WorldType wt : WorldType.values()) {
+            worlds.put(wt, World.create(this, wt));
+        }
+        this.date = new Date(1, Season.Spring, 1);
         this.player = new Player(this);
-        this.pelicanTown = World.create(this, WorldType.PELICAN_TOWN);
-        this.oasis = World.create(this, WorldType.OASIS);
-        this.gingerIsland = World.create(this, WorldType.GINGER_ISLAND);
-        this.date = new Date(Season.Spring, 1);
+        Elements.build();
+        Recipes.build();
+    }
+
+    public World getWorld(WorldType type) {
+        return worlds.get(type);
     }
 
     @Override

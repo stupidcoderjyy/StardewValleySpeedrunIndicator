@@ -25,7 +25,7 @@ public class EStack {
 
     @Override
     public String toString() {
-        return element + "x" + val;
+        return this == NULL ? "null" : element + "x" + val;
     }
 
     public static EStack merge(EStack stack1, EStack stack2) {

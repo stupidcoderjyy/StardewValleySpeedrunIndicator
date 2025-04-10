@@ -12,6 +12,8 @@ public class Elements {
     public static final Element STRAWBERRY;
     public static final Element BLUEBERRY;
 
+    public static final Element STRAWBERRY_SEED;
+
     private static final Map<Element, Element> BREW_OUTPUT;
     private static final Map<Element, Element> SEED_2_CROP;
 
@@ -25,6 +27,7 @@ public class Elements {
         STRAWBERRY = createFruit("strawberry", "曹美");
         BLUEBERRY = createFruit("blueberry", "蓝莓");
 
+        STRAWBERRY_SEED = createSeed(STRAWBERRY);
         STAMINA = new Element(Id.ofPlayer("stamina"), "耐力", -15, 270);
     }
 
@@ -38,13 +41,16 @@ public class Elements {
 
     private static Element createFruit(String id, String name) {
         var fruit = new Element(Id.ofItem(id), name, Tag.FRUIT_T);
-        createSeed(fruit);
         BREW_OUTPUT.put(fruit, new Element(fruit.id.withSuffix("_wine"), fruit.name + "果酒", Tag.FRUIT_WINE));
         return fruit;
     }
 
-    private static void createSeed(Element plant) {
+    private static Element createSeed(Element plant) {
         Element seed = new Element(plant.id.withSuffix("_seed"), plant.name + "种子" + Tag.SEED);
         SEED_2_CROP.put(seed, plant);
+        return seed;
+    }
+
+    public static void build() {
     }
 }

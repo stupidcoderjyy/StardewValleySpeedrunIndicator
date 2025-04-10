@@ -49,9 +49,7 @@ public final class Element {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
         var that = (Element) obj;
-        return Objects.equals(this.id, that.id) &&
-                this.min == that.min &&
-                this.max == that.max;
+        return Objects.equals(this.id, that.id);
     }
 
     @Override
@@ -61,6 +59,6 @@ public final class Element {
 
     @Override
     public String toString() {
-        return id.toString();
+        return name;
     }
 }

@@ -44,4 +44,9 @@ public class ESlot {
     public boolean isNull() {
         return stack == EStack.NULL;
     }
+
+    @Override
+    public String toString() {
+        return "[" + stack.toString() + "]";
+    }
 }
